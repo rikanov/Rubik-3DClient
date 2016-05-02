@@ -1,0 +1,4 @@
+[Project]
+Name=rubik_client
+Manager=KDevCMakeManager
+VersionControl=kdevgit
