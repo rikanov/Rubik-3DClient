@@ -28,6 +28,12 @@
     {
       return z==0;
     }
+    
+    static inline int
+    twist(const int & axis, const bool & inverse)
+    {
+      return axis*(inverse ? -1 : 1);
+    }
 void Cube3D::facets(const int& color_mark, const int& a1, const int& a2, const int& a3, const int& a4) const
 {
   glColor3fv(color[color_mark]);
@@ -129,10 +135,46 @@ void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const
     {
       for(int z=-isZero(axisZ);z<=isZero(axisZ);++z)
       {
-	const int X_coord=axisX+x;
-	const int Y_coord=axisY+y;
-	const int Z_coord=axisZ+z;
+	const int X_from=axisX+x;
+	const int Y_from=axisY+y;
+	const int Z_from=axisZ+z;
 	;
+	int X_to,Y_to,Z_to;
+	if(twist(axisX, inverse)==1)
+	{
+	  X_to =   X_from;
+	  Y_to =   Z_from;
+	  Z_to = - Y_from;
+	}
+	else if(twist(axisY, inverse)==1)
+	{
+	  X_to = - Z_from;
+	  Y_to =   Y_from;
+	  Z_to =   X_from;
+	}
+	else if(twist(axisZ, inverse)==1)
+	{
+	  X_to =   Y_from;
+	  Y_to = - X_from;
+	  Z_to =   Z_from;
+	}else if(twist(axisX, inverse)==-1)
+	{
+	  X_to =   X_from;
+	  Y_to = - Z_from;
+	  Z_to =   Y_from;
+	}
+	else if(twist(axisY, inverse)==-1)
+	{
+	  X_to =   Z_from;
+	  Y_to =   Y_from;
+	  Z_to = - X_from;
+	}
+	else if(twist(axisZ, inverse)==-1)
+	{
+	  X_to = - Y_from;
+	  Y_to =   X_from;
+	  Z_to =   Z_from;
+	}
       }
     }
   }
