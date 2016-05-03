@@ -4,6 +4,8 @@
 #include<stdio.h>
 #include"Rubik3D.h"
 
+#define FROM Cublets[X_from+1][Y_from+1][Z_from+1]
+#define MOVE_TO Cublets[X_to+1][Y_to+1][Z_to+1]
   static GLfloat color[7][3]= 
   { // FURLDB
     {1.0,0.5,0.0}, //orange
@@ -74,27 +76,27 @@ Cube3D::Cube3D(const int& x, const int& y, const int& z):
   left  = yellow;
   back  = red   ;
   down  = green ;
-  graySides();
+  setSideColors();
 }
   
-void Cube3D::graySides()
+void Cube3D::setSideColors()
 {
-  front = (PosZ == 1) ? front : gray;
-  up    = (PosY == 1) ? up    : gray;
-  right = (PosX == 1) ? right : gray;
-  left  = (PosX ==-1) ? left  : gray;
-  back  = (PosY ==-1) ? back  : gray;
-  down  = (PosZ ==-1) ? down  : gray;
+  Front = (PosZ == 1) ? front : gray;
+  Up    = (PosY == 1) ? up    : gray;
+  Right = (PosX == 1) ? right : gray;
+  Left  = (PosX ==-1) ? left  : gray;
+  Back  = (PosY ==-1) ? back  : gray;
+  Down  = (PosZ ==-1) ? down  : gray;
 }
 
 void Cube3D::show() const
 {
-  facets(front,4,5,6,7);
-  facets(up   ,2,3,7,6);
-  facets(right,1,2,6,5);
-  facets(left ,0,4,7,3);    
-  facets(down ,0,1,5,4);
-  facets(back ,0,3,2,1);
+  facets(Front,4,5,6,7);
+  facets(Up   ,2,3,7,6);
+  facets(Right,1,2,6,5);
+  facets(Left ,0,4,7,3);    
+  facets(Down ,0,1,5,4);
+  facets(Back ,0,3,2,1);
 }
 
 //============================================
@@ -174,6 +176,24 @@ void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const
 	  X_to = - Y_from;
 	  Y_to =   X_from;
 	  Z_to =   Z_from;
+	}
+	
+	// swap cube colors 
+	
+	if(axisX)
+	{
+	  MOVE_TO->up    = MOVE_TO->down = FROM->Right + FROM->Left ;
+	  MOVE_TO->right = MOVE_TO->left = FROM->Up    + FROM->Down ;	  
+	}
+	else if(axisY)
+	{
+	  MOVE_TO->up   = MOVE_TO->down  = FROM->Front + FROM->Back ;
+	  MOVE_TO->back = MOVE_TO->front = FROM->Up    + FROM->Down ;	  
+	}
+	else if(axisZ)
+	{
+	  MOVE_TO->right = MOVE_TO->left  = FROM->Front + FROM->Back ;
+	  MOVE_TO->back  = MOVE_TO->front = FROM->Right + FROM->Left ; 	  
 	}
       }
     }

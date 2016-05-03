@@ -1,14 +1,37 @@
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#else
+#ifdef _WIN32
+  #include <windows.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#endif
+
 class Cube3D
 { 
+  friend class Rubik3D;
   int Colorize[3][3][3]={}; // to be valid exactly one of the coordinates must differ from 1
   
-  int& /* sides */
-    front = Colorize[1][1][2],
-    up    = Colorize[1][2][1],
-    right = Colorize[2][1][1],
-    left  = Colorize[0][1][1],
-    down  = Colorize[1][0][1],
-    back  = Colorize[1][1][0];
+  int& /* side colours references */
+    Front = Colorize[1][1][2],
+    Up    = Colorize[1][2][1],
+    Right = Colorize[2][1][1],
+    Left  = Colorize[0][1][1],
+    Down  = Colorize[1][0][1],
+    Back  = Colorize[1][1][0];  
+    
+  int /* sides temporarily colours */
+    front,
+    up,
+    right,
+    left,
+    down,
+    back;
+
 
   const int PosX,PosY,PosZ;
   GLfloat Corners[8][3]=
@@ -24,7 +47,7 @@ class Cube3D
   };
     
   void facets(const int & color_mark,const int & a1,const int & a2,const int & a3,const int & a4) const;
-  void graySides();
+  void setSideColors();
   
 public:
   
