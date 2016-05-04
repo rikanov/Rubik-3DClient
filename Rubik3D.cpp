@@ -49,6 +49,13 @@
     {
       return axis*(inverse ? -1 : 1);
     }
+    
+    static inline int
+    reverter(const bool & R)
+    {
+      return R ? -1 : 1;
+    }
+    
 void Cube3D::facets(const int& color_mark, const int& a1, const int& a2, const int& a3, const int& a4) const
 {
   glColor3fv(color[color_mark]);
@@ -111,7 +118,12 @@ void Cube3D::show() const
 
 //============================================
 
-Rubik3D::Rubik3D()
+Rubik3D::Rubik3D():
+  axisX(0),
+  axisY(0),
+  axisZ(0),
+  inverse(false),
+  theta(0)
 {
   for(int x=-1;x<2;++x)
   {
@@ -139,7 +151,7 @@ Rubik3D::~Rubik3D()
   }
 }
 
-void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const bool & inverse)
+void Rubik3D::rotate()
 {
   for(int x=-isZero(axisX);x<=isZero(axisX);++x)
   {
@@ -150,7 +162,7 @@ void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const
 	const int X_from=axisX+x;
 	const int Y_from=axisY+y;
 	const int Z_from=axisZ+z;
-	; OUT_('('<<x<<','<<y<<','<<z<<')'<<" -> ["<<X_from<<','<<Y_from<<','<<Z_from<<']')
+	; 
 	int X_to,Y_to,Z_to;
 	if(twist(axisX, inverse)==1)
 	{
@@ -189,19 +201,25 @@ void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const
 	}
 	
 	// swap cube colors 
-	OUT_("To:  ["<<X_to<<','<<Y_to<<','<<Z_to<<']')
+	
 	if(axisX)
 	{
+	  MOVE_TO->left  = FROM->Left;
+	  MOVE_TO->right = FROM->Right;
 	  MOVE_TO->up    = MOVE_TO->down = FROM->Front + FROM->Back ;
 	  MOVE_TO->front = MOVE_TO->back = FROM->Up    + FROM->Down ;	  
 	}
 	else if(axisY)
 	{
+	  MOVE_TO->down = FROM->Down;
+	  MOVE_TO->up   = FROM->Up;
 	  MOVE_TO->left = MOVE_TO->right = FROM->Front + FROM->Back ;
 	  MOVE_TO->back = MOVE_TO->front = FROM->Left  + FROM->Right ;	  
 	}
 	else if(axisZ)
 	{
+	  MOVE_TO->back  = FROM->Back;
+	  MOVE_TO->front = FROM->Front;
 	  MOVE_TO->right = MOVE_TO->left = FROM->Up   + FROM->Down ;
 	  MOVE_TO->up    = MOVE_TO->down = FROM->Right + FROM->Left ; 	  
 	}
@@ -225,7 +243,7 @@ void Rubik3D::setColors()
   }
 }
 
-void Rubik3D::showCube() const
+void Rubik3D::showCube() 
 {
   for(int x=-1;x<2;++x)
   {
@@ -233,8 +251,60 @@ void Rubik3D::showCube() const
     {
       for(int z=-1;z<2;++z)
       {
-	Cublets[x+1][y+1][z+1]->show();
+	if( theta==0 ||
+	  ( axisX && (axisX!=x)) ||
+	  ( axisY && (axisY!=y)) ||
+	  ( axisZ && (axisZ!=z))
+	)
+	{
+	  Cublets[x+1][y+1][z+1]->show();
+	}
       }
     }
   }
+  
+  // Rotate sides
+  
+ 
+  if(theta)
+  {
+    glRotatef(reverter(inverse)*(90-theta),-axisX,-axisY,-axisZ);
+    for(int x=-1;x<2;++x)
+    {
+      for(int y=-1;y<2;++y)
+      {
+	for(int z=-1;z<2;++z)
+	{
+	  if( 
+	    ( axisX && (axisX==x)) ||
+	    ( axisY && (axisY==y)) ||
+	    ( axisZ && (axisZ==z))
+	  )
+	  {
+	    Cublets[x+1][y+1][z+1]->show();
+	  }
+	}
+      }
+    }
+    if(theta-- == 1)
+    {
+      rotate();
+      axisX=0;
+      axisY=0;
+      axisZ=0;
+    }
+  }
+}
+
+void Rubik3D::twister(const int & X, const int & Y, const int & Z, const bool & inv)
+{
+  if(theta)
+  {
+    return; // waiting for finishing former action
+  }
+  axisX=X;
+  axisY=Y;
+  axisZ=Z;
+  inverse=inv;
+  theta=90;
 }

@@ -58,11 +58,15 @@ public:
 class Rubik3D
 {
   Cube3D * Cublets[3][3][3];
+  int axisX, axisY, axisZ;
+  bool inverse;
+  int theta;
   
 public:
   Rubik3D();
   ~Rubik3D();
-  void rotate(const int& axisX, const int& axisY, const int& axisZ, const bool& inverse); // to be valid exactly one of the coordinates must differ from zero!
+  void twister(const int& X, const int& Y, const int& Z, const bool& inv);
+  void rotate(); // to be valid exactly one of the coordinates must differ from zero!
   void setColors();
-  void showCube() const;  
+  void showCube();  
 };

@@ -23,19 +23,19 @@ int beginx=0, beginy=0;
 
 void makeMenu()
 {
-  glutAddMenuEntry("Up               U   ", 1);
-  glutAddMenuEntry("Up Inv.       shift+U", 2);
-  glutAddMenuEntry("Right            R   ", 3);
-  glutAddMenuEntry("Right Inv.    shift+R", 4);
-  glutAddMenuEntry("Front            F   ", 5);
-  glutAddMenuEntry("Front Inv.    shift+F", 6);
-  glutAddMenuEntry("Left             L   ", 7);
-  glutAddMenuEntry("Left Inv.     shift+L", 8);
-  glutAddMenuEntry("Back             B   ", 9);
-  glutAddMenuEntry("Back Inv.     shift+B",10);
-  glutAddMenuEntry("Down             D   ",11);
-  glutAddMenuEntry("Down Inv      shift+D",12);
-  glutAddMenuEntry("Ask server... shift+A",13);
+  glutAddMenuEntry("Up                    U   ", 1);
+  glutAddMenuEntry("Up Inv.           shift+U", 2);
+  glutAddMenuEntry("Right                 R   ", 3);
+  glutAddMenuEntry("Right Inv.       shift+R", 4);
+  glutAddMenuEntry("Front                 F   ", 5);
+  glutAddMenuEntry("Front Inv.       shift+F", 6);
+  glutAddMenuEntry("Left                    L   ", 7);
+  glutAddMenuEntry("Left Inv.          shift+L", 8);
+  glutAddMenuEntry("Back                  B    ", 9);
+  glutAddMenuEntry("Back Inv.       shift+B",10);
+  glutAddMenuEntry("Down                 D   ",11);
+  glutAddMenuEntry("Down Inv       shift+D",12);
+  glutAddMenuEntry("Ask server...  shift+A",13);
   glutAddMenuEntry("Exit",14);
 }
 void mouse(int btn,int state,int x,int y)
@@ -44,7 +44,7 @@ void mouse(int btn,int state,int x,int y)
   {
     moving = 1;
     beginx = x;
-    beginy=y;
+    beginy = y;
   }
 }
 void motion(int x, int y)
@@ -90,21 +90,56 @@ void display()
     glFlush();
     glutSwapBuffers();
 }
+
+void keyboard(unsigned char key, int, int)
+{
+  int x=0,y=0,z=0;
+  bool inv=(key & 32)==0;
+  key |= 32;
+  switch(key)
+  {
+    case 'l':
+      x = -1;
+      break;
+    case 'r':
+      x = 1;
+      break;
+    case 'd':
+      y =-1;
+      break;
+    case 'u':
+      y = 1;
+      break;
+    case 'b':
+      z =-1;
+      break;
+    case 'f':
+      z = 1;
+      break;
+    default:
+      return;
+  }
+  rubik.twister(x,y,z,inv);
+}
+
+void mymenu(int z)
+{
+  ;
+}
 int main(int argc, char **argv) {
-  
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize (640, 600);
   glutCreateWindow ("RUBIK'S CUBE");
   myreshape(640,640);
   glutReshapeFunc (myreshape);
-//   glutIdleFunc(spincube);
+  glutIdleFunc(display);
   glutMouseFunc(mouse);
   glutMotionFunc(motion);
-//   glutCreateMenu(mymenu);
+  glutCreateMenu(mymenu);
   makeMenu();
   glutAttachMenu(GLUT_RIGHT_BUTTON);
- // glutKeyboardFunc(keyboard);
+  glutKeyboardFunc(keyboard);
   glutDisplayFunc (display);
   glEnable(GL_DEPTH_TEST);
   glutMainLoop();
