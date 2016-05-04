@@ -1,14 +1,14 @@
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glu.h>
+  #include <GLUT/glut.h>
 #else
-#ifdef _WIN32
-  #include <windows.h>
-#endif
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+  #ifdef _WIN32
+    #include <windows.h>
+  #endif
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+  #include <GL/glut.h>
 #endif
 
 class Cube3D
@@ -63,4 +63,6 @@ public:
   Rubik3D();
   ~Rubik3D();
   void rotate(const int& axisX, const int& axisY, const int& axisZ, const bool& inverse); // to be valid exactly one of the coordinates must differ from zero!
+  void setColors();
+  void showCube() const;  
 };

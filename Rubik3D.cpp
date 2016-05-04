@@ -1,20 +1,33 @@
+#ifdef __APPLE__
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glu.h>
+  #include <GLUT/glut.h>
+#else
+  #ifdef _WIN32
+    #include <windows.h>
+  #endif
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+  #include <GL/glut.h>
+#endif
 
+#include <iostream>
 #include <string.h>
-#include<GL/glut.h>
-#include<stdio.h>
 #include"Rubik3D.h"
 
+#define OUT(x) std::cout<<x<<' ';
+#define OUT_(x) std::cout<<x<<std::endl;
 #define FROM Cublets[X_from+1][Y_from+1][Z_from+1]
 #define MOVE_TO Cublets[X_to+1][Y_to+1][Z_to+1]
   static GLfloat color[7][3]= 
   { // FURLDB
+    {0.5,0.5,0.5}, // inner color: gray
     {1.0,0.5,0.0}, //orange
     {0.0,0.0,1.0}, //blue
     {1.0,1.0,1.0}, //white
     {1.0,1.0,0.0}, //yellow
     {0.0,1.0,0.0}, //green
-    {1.0,0.0,0.0}, //red
-    {0.5,0.5,0.5}  // inner color: gray
+    {1.0,0.0,0.0}  //red
   };
   static const int
     gray   =0,
@@ -46,17 +59,14 @@ void Cube3D::facets(const int& color_mark, const int& a1, const int& a2, const i
   glVertex3fv(Corners[a4]);
   glEnd();
   
-  if(color_mark)
-  {
-    glColor3f(0,0,0); // black frame around the facets
-    glLineWidth(3.0);
-    glBegin(GL_LINE_LOOP);
-    glVertex3fv(Corners[a1]);
-    glVertex3fv(Corners[a2]);
-    glVertex3fv(Corners[a3]);
-    glVertex3fv(Corners[a4]);
-    glEnd();
-  }
+  glColor3f(0,0,0); // black frame around the facets
+  glLineWidth(2.0);
+  glBegin(GL_LINE_LOOP);
+  glVertex3fv(Corners[a1]);
+  glVertex3fv(Corners[a2]);
+  glVertex3fv(Corners[a3]);
+  glVertex3fv(Corners[a4]);
+  glEnd();
 }
 
 Cube3D::Cube3D(const int& x, const int& y, const int& z):
@@ -85,8 +95,8 @@ void Cube3D::setSideColors()
   Up    = (PosY == 1) ? up    : gray;
   Right = (PosX == 1) ? right : gray;
   Left  = (PosX ==-1) ? left  : gray;
-  Back  = (PosY ==-1) ? back  : gray;
-  Down  = (PosZ ==-1) ? down  : gray;
+  Down  = (PosY ==-1) ? down  : gray;
+  Back  = (PosZ ==-1) ? back  : gray;
 }
 
 void Cube3D::show() const
@@ -140,7 +150,7 @@ void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const
 	const int X_from=axisX+x;
 	const int Y_from=axisY+y;
 	const int Z_from=axisZ+z;
-	;
+	; OUT_('('<<x<<','<<y<<','<<z<<')'<<" -> ["<<X_from<<','<<Y_from<<','<<Z_from<<']')
 	int X_to,Y_to,Z_to;
 	if(twist(axisX, inverse)==1)
 	{
@@ -179,22 +189,51 @@ void Rubik3D::rotate(const int& axisX, const int& axisY, const int& axisZ, const
 	}
 	
 	// swap cube colors 
-	
+	OUT_("To:  ["<<X_to<<','<<Y_to<<','<<Z_to<<']')
 	if(axisX)
 	{
-	  MOVE_TO->up    = MOVE_TO->down = FROM->Right + FROM->Left ;
-	  MOVE_TO->right = MOVE_TO->left = FROM->Up    + FROM->Down ;	  
+	  MOVE_TO->up    = MOVE_TO->down = FROM->Front + FROM->Back ;
+	  MOVE_TO->front = MOVE_TO->back = FROM->Up    + FROM->Down ;	  
 	}
 	else if(axisY)
 	{
-	  MOVE_TO->up   = MOVE_TO->down  = FROM->Front + FROM->Back ;
-	  MOVE_TO->back = MOVE_TO->front = FROM->Up    + FROM->Down ;	  
+	  MOVE_TO->left = MOVE_TO->right = FROM->Front + FROM->Back ;
+	  MOVE_TO->back = MOVE_TO->front = FROM->Left  + FROM->Right ;	  
 	}
 	else if(axisZ)
 	{
-	  MOVE_TO->right = MOVE_TO->left  = FROM->Front + FROM->Back ;
-	  MOVE_TO->back  = MOVE_TO->front = FROM->Right + FROM->Left ; 	  
+	  MOVE_TO->right = MOVE_TO->left = FROM->Up   + FROM->Down ;
+	  MOVE_TO->up    = MOVE_TO->down = FROM->Right + FROM->Left ; 	  
 	}
+      }
+    }
+  }
+  setColors();
+}
+
+void Rubik3D::setColors()
+{
+  for(int x=-1;x<2;++x)
+  {
+    for(int y=-1;y<2;++y)
+    {
+      for(int z=-1;z<2;++z)
+      {
+	Cublets[x+1][y+1][z+1]->setSideColors();
+      }
+    }
+  }
+}
+
+void Rubik3D::showCube() const
+{
+  for(int x=-1;x<2;++x)
+  {
+    for(int y=-1;y<2;++y)
+    {
+      for(int z=-1;z<2;++z)
+      {
+	Cublets[x+1][y+1][z+1]->show();
       }
     }
   }
