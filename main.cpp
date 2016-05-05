@@ -70,8 +70,8 @@ void myreshape(int w,int h)
     else
     {
       glOrtho(-10.0*(GLfloat)w/(GLfloat)h, 10.0*(GLfloat)w/(GLfloat)h,-10.0,10.0,-10.0,10.0);
-      glMatrixMode(GL_MODELVIEW);
     }
+    glMatrixMode(GL_MODELVIEW);
 }
 void display()
 {
@@ -126,11 +126,31 @@ void mymenu(int z)
 {
   ;
 }
+
+void initLight(void) 
+{
+   GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+   GLfloat mat_shininess[] = { 50.0 };
+   GLfloat light_position[] = { -1.0, 5.0, 5.0, 0.0 };
+   glShadeModel (GL_SMOOTH);
+
+   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+   glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   glEnable(GL_DEPTH_TEST);
+}
+
 int main(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize (640, 600);
   glutCreateWindow ("RUBIK'S CUBE");
+  glClearColor(ScreenColor[0],ScreenColor[1],ScreenColor[2], 1.0f);
+  glutPostRedisplay();
+ // initLight();
   myreshape(640,640);
   glutReshapeFunc (myreshape);
   glutIdleFunc(display);

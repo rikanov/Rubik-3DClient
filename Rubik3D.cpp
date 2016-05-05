@@ -118,12 +118,13 @@ void Cube3D::show() const
 
 //============================================
 
-Rubik3D::Rubik3D():
+Rubik3D::Rubik3D(const int & H):
   axisX(0),
   axisY(0),
   axisZ(0),
   inverse(false),
-  theta(0)
+  theta(0),
+  haste(H)
 {
   for(int x=-1;x<2;++x)
   {
@@ -286,13 +287,14 @@ void Rubik3D::showCube()
 	}
       }
     }
-    if(theta-- == 1)
+    if(theta == haste)
     {
       rotate();
       axisX=0;
       axisY=0;
       axisZ=0;
     }
+    theta -= haste;
   }
 }
 

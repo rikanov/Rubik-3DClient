@@ -61,9 +61,10 @@ class Rubik3D
   int axisX, axisY, axisZ;
   bool inverse;
   int theta;
+  int haste;
   
 public:
-  Rubik3D();
+  explicit Rubik3D(const int & H=2);
   ~Rubik3D();
   void twister(const int& X, const int& Y, const int& Z, const bool& inv);
   void rotate(); // to be valid exactly one of the coordinates must differ from zero!
